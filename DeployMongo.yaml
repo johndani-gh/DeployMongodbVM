@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EC2 instance in imported VPC/subnet with MongoDB installation
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t2.micro
+
+  AmiId:
+    Type: String
+    Default: ami-00beae93a2d981137
+
+  RoleName:
+    Type: String
+    Default: WizEC2RolePlusS3AccessMongo
+
+Resources:
+  MongoSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH and MongoDB access
+      VpcId: !ImportValue VPCA-VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 27017
+          ToPort: 27017
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: mongodb-ec2-sg
+
+  Ec2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref RoleName
+      Path: /
+
+  MongoEc2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref Ec2InstanceProfile
+      SubnetId: !ImportValue MySubnetPublic1Id
+      SecurityGroupIds:
+        - !Ref MongoSecurityGroup
+      Tags:
+        - Key: Name
+          Value: MongoDB
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # Update packages
+          dnf update -y || yum update -y
+
+          # Create MongoDB repo file
+          cat > /etc/yum.repos.d/mongodb-org-8.0.repo <<'EOF'
+          [mongodb-org-7.0]
+          name=MongoDB Repository
+          baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/7.0/x86_64/
+          gpgcheck=1
+          enabled=1
+          gpgkey=https://pgp.mongodb.com/server-7.0.asc
+          EOF
+
+          # Install MongoDB
+          yum install -y mongodb-org-7.0.16   mongodb-org-database-7.0.16   mongodb-org-server-7.0.16   mongodb-mongosh   mongodb-org-mongos-7.0.16   mongodb-org-database-tools-extra-7.0.16
+
+          # Enable and start mongod
+          systemctl enable mongod
+          systemctl start mongod
+
+          # Allow remote connections
+          sed -i 's/^  bindIp: .*/  bindIp: 0.0.0.0/' /etc/mongod.conf || true
+          systemctl restart mongod
+
+Outputs:
+  InstanceId:
+    Value: !Ref MongoEc2Instance
+
+  PublicIp:
+    Value: !GetAtt MongoEc2Instance.PublicIp
+
+  PrivateIp:
+    Value: !GetAtt MongoEc2Instance.PrivateIp
+
+  SecurityGroupId:
+    Value: !Ref MongoSecurityGroup
