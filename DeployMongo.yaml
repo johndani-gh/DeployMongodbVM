@@ -65,7 +65,6 @@ Resources:
       ImageId: !Ref AmiId
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref Ec2InstanceProfile
-      SubnetId: !ImportValue MySubnetPublic1Id
       NetworkInterfaces:
         - NetworkInterfaceId: !Ref MongoENI
           DeviceIndex: 0
