@@ -19,7 +19,17 @@ Parameters:
     Description: Existing EC2 key pair
     Default: WizTechEC2KeyPair2026
 
+# Resource Section
+#
 Resources:
+
+  MongoENI:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      SubnetId: !ImportValue MySubnetPublic1Id
+      PrivateIpAddress: 10.1.1.100
+      GroupSet: !Ref MongoSecurityGroup
+
   MongoSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -48,7 +58,6 @@ Resources:
         - !Ref RoleName
       Path: /
 
-  
   MongoEc2Instance:
     Type: AWS::EC2::Instance
     Properties:
@@ -56,6 +65,9 @@ Resources:
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref Ec2InstanceProfile
       SubnetId: !ImportValue MySubnetPublic1Id
+      NetworkInterfaces:
+        - NetworkInterfaceId: !Ref MongoENI
+          DeviceIndex:m 0
       KeyName: !Ref  KeyName
       SecurityGroupIds:
         - !Ref MongoSecurityGroup
