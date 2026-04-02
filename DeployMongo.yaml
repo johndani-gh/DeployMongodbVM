@@ -29,7 +29,49 @@ Resources:
       SubnetId: !ImportValue MySubnetPublic1Id
       PrivateIpAddress: 10.1.1.100
       GroupSet: 
-        - !Ref MongoSecurityGroup
+        - !GetAtt MongoSecurityGroup.GroupId
+
+  MongoSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH and MongoDB access
+      VpcId: !ImportValue VPCA-VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 27017
+          ToPort: 27017
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: mongodb-ec2-sg
+
+  MongoSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH and MongoDB access
+      VpcId: !ImportValue VPCA-VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 27017
+          ToPort: 27017
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: mongodb-ec2-sg
 
   MongoSecurityGroup:
     Type: AWS::EC2::SecurityGroup
