@@ -28,7 +28,8 @@ Resources:
     Properties:
       SubnetId: !ImportValue MySubnetPublic1Id
       PrivateIpAddress: 10.1.1.100
-      GroupSet: !Ref MongoSecurityGroup
+      GroupSet: 
+        - !Ref MongoSecurityGroup
 
   MongoSecurityGroup:
     Type: AWS::EC2::SecurityGroup
