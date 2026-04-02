@@ -52,48 +52,6 @@ Resources:
         - Key: Name
           Value: mongodb-ec2-sg
 
-  MongoSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Allow SSH and MongoDB access
-      VpcId: !ImportValue VPCA-VpcId
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 27017
-          ToPort: 27017
-          CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: -1
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: mongodb-ec2-sg
-
-  MongoSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Allow SSH and MongoDB access
-      VpcId: !ImportValue VPCA-VpcId
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 27017
-          ToPort: 27017
-          CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: -1
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: mongodb-ec2-sg
-
   Ec2InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -112,8 +70,6 @@ Resources:
         - NetworkInterfaceId: !Ref MongoENI
           DeviceIndex: 0
       KeyName: !Ref  KeyName
-      SecurityGroupIds:
-        - !Ref MongoSecurityGroup
       Tags:
         - Key: Name
           Value: MongoDB
