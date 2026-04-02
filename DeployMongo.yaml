@@ -67,7 +67,7 @@ Resources:
       SubnetId: !ImportValue MySubnetPublic1Id
       NetworkInterfaces:
         - NetworkInterfaceId: !Ref MongoENI
-          DeviceIndex:m 0
+          DeviceIndex: 0
       KeyName: !Ref  KeyName
       SecurityGroupIds:
         - !Ref MongoSecurityGroup
