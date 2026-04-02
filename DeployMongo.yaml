@@ -69,7 +69,7 @@ Resources:
           dnf update -y || yum update -y
 
           # Create MongoDB repo file
-          cat > /etc/yum.repos.d/mongodb-org-8.0.repo <<'EOF'
+          cat > /etc/yum.repos.d/mongodb-org-7.0.repo <<'EOF'
           [mongodb-org-7.0]
           name=MongoDB Repository
           baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/7.0/x86_64/
