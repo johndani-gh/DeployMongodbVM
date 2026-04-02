@@ -14,6 +14,11 @@ Parameters:
     Type: String
     Default: WizEC2RolePlusS3AccessMongo
 
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Existing EC2 key pair
+    Default: WizTechEC2KeyPair2026
+
 Resources:
   MongoSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -43,6 +48,7 @@ Resources:
         - !Ref RoleName
       Path: /
 
+  
   MongoEc2Instance:
     Type: AWS::EC2::Instance
     Properties:
@@ -50,6 +56,7 @@ Resources:
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref Ec2InstanceProfile
       SubnetId: !ImportValue MySubnetPublic1Id
+      KeyName: !Ref  KeyName
       SecurityGroupIds:
         - !Ref MongoSecurityGroup
       Tags:
