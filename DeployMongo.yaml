@@ -168,9 +168,11 @@ Resources:
 
           # Get mongo_backup from S3 and set crontab
           aws s3 cp s3://wiztech-bucket-johndani-for-mongobackup/mongo_backup.sh /home/ec2-user
+          chown ec2-user:ec2-user /home/ec2-user/mongo_backup.sh
           chmod 755 /home/ec2-user/mongo_backup.sh
-          
-          (crontab -l 2>/dev/null; echo "0 23 * * * /home/ec2-user/mongo_backup.sh") | crontab -
+
+          #(crontab -l 2>/dev/null; echo "0 23 * * * /home/ec2-user/mongo_backup.sh") | crontab -
+          crontab -u ec2-user -l 2>/dev/null | { cat; echo "0 23 * * * /home/ec2-user/mongo_backup.sh"; } | crontab -u ec2-user -
 
 # Setup mongodb login/auth
 # Working
