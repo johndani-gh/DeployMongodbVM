@@ -102,7 +102,65 @@ Resources:
 
           # Allow remote connections
           sed -i 's/^  bindIp: .*/  bindIp: 0.0.0.0/' /etc/mongod.conf || true
+          # Set mongodb accounts
+          #
+          #!/bin/bash
+          set -euo pipefail
+
+          MONGO_ADMIN_USER="admin"
+          MONGO_ADMIN_PASS="12345678"
+          FLASK_ADMIN_USER="flaskadmin"
+          FLASK_ADMIN_PASS="12345678"
+          # Start MongoDB (adjust if needed)
+          systemctl start mongod || service mongod start
+
+          # Wait for MongoDB
+          until mongosh --quiet --eval 'db.runCommand({ ping: 1 })' >/dev/null 2>&1; do
+            sleep 5
+          done
+
+          # Create admin user if not exists
+          mongosh admin --quiet <<EOF
+          if (db.getUser("${MONGO_ADMIN_USER}") == null) {
+            db.createUser({
+              user: "${MONGO_ADMIN_USER}",
+              pwd: "${MONGO_ADMIN_PASS}",
+              roles: [ { role: "root", db: "admin" } ]
+            });
+            print("Admin user created");
+          } else {
+            print("Admin user already exists");
+          }
+          EOF
+
+          # Create flaskadmin user if not exists
+          mongosh admin --quiet <<EOF
+          if (db.getUser("${FLASK_ADMIN_USER}") == null) {
+            db.createUser({
+              user: "${FLASK_ADMIN_USER}",
+              pwd: "${FLASK_ADMIN_PASS}",
+              roles: [ { role: "root", db: "wizns" } ]
+            });
+            print("Admin user created for wizns");
+          } else {
+            print("Admin user already exists");
+          }
+          EOF
+
+          # Enable authentication if not already enabled
+          if ! grep -q "authorization: enabled" /etc/mongod.conf; then
+          cat <<EOF >> /etc/mongod.conf
+
+          security:
+            authorization: enabled
+          EOF
+          fi
+
           systemctl restart mongod
+# Setup mongodb login/auth
+#
+# setup Crontab for daily backups
+# crontab -e 0 2 * * * /usr/bin/python3 /home/ec2-user/mongodbscript.py
 
 Outputs:
   InstanceId:
