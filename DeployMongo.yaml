@@ -100,6 +100,9 @@ Resources:
           systemctl enable mongod
           systemctl start mongod
 
+          # Installing Crontab
+          yum install -y cronie
+
           # Allow remote connections
           sed -i 's/^  bindIp: .*/  bindIp: 0.0.0.0/' /etc/mongod.conf || true
           # Set mongodb accounts
@@ -158,10 +161,18 @@ Resources:
           fi
 
           systemctl restart mongod
+          systemctl start crond
+          systemctl enabled crond
+
+          # Get mongo_backup from S3 and set crontab
+          aws s3 cp s3://wiztech-bucket-johndani-for-mongobackup/mongo_backup.sh /home/ec2-user
+          chmod 755 mongo_backup
+          (crontab -l 2>/dev/null; echo "0 23 * * * /home/ec2-user/mongo_backup.sh") | crontab -
+
 # Setup mongodb login/auth
-#
-# setup Crontab for daily backups
-# crontab -e 0 2 * * * /usr/bin/python3 /home/ec2-user/mongodbscript.py
+# Working
+# Setup mongobackup
+# 
 
 Outputs:
   InstanceId:
