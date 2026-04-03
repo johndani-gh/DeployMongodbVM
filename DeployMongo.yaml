@@ -139,9 +139,9 @@ Resources:
             db.createUser({
               user: "${!FLASK_ADMIN_USER}",
               pwd: "${!FLASK_ADMIN_PASS}",
-              roles: [ { role: "readWrite", db: "wizns" } ]
+              roles: [ { role: "readWrite", db: "wizdb" } ]
             });
-            print("Admin user created for wizns");
+            print("Admin user created for wizdb");
           } else {
             print("Admin user already exists");
           }
