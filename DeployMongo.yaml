@@ -164,7 +164,7 @@ Resources:
 
           systemctl restart mongod
           systemctl start crond
-          systemctl enabled crond
+          systemctl enable crond
 
           # Get mongo_backup from S3 and set crontab
           aws s3 cp s3://wiztech-bucket-johndani-for-mongobackup/mongo_backup.sh /home/ec2-user
