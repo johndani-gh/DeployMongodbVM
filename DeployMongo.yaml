@@ -121,10 +121,10 @@ Resources:
 
           # Create admin user if not exists
           mongosh admin --quiet <<EOF
-          if (db.getUser("${MONGO_ADMIN_USER}") == null) {
+          if (db.getUser("$${MONGO_ADMIN_USER}") == null) {
             db.createUser({
-              user: "${MONGO_ADMIN_USER}",
-              pwd: "${MONGO_ADMIN_PASS}",
+              user: "$${MONGO_ADMIN_USER}",
+              pwd: "$${MONGO_ADMIN_PASS}",
               roles: [ { role: "root", db: "admin" } ]
             });
             print("Admin user created");
@@ -135,10 +135,10 @@ Resources:
 
           # Create flaskadmin user if not exists
           mongosh admin --quiet <<EOF
-          if (db.getUser("${FLASK_ADMIN_USER}") == null) {
+          if (db.getUser("$${FLASK_ADMIN_USER}") == null) {
             db.createUser({
-              user: "${FLASK_ADMIN_USER}",
-              pwd: "${FLASK_ADMIN_PASS}",
+              user: "$${FLASK_ADMIN_USER}",
+              pwd: "$${FLASK_ADMIN_PASS}",
               roles: [ { role: "root", db: "wizns" } ]
             });
             print("Admin user created for wizns");
