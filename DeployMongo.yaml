@@ -135,6 +135,7 @@ Resources:
 
           # Create flaskadmin user if not exists
           mongosh admin --quiet <<EOF
+          db = db.getSiblingDB("wizdb");
           if (db.getUser("${!FLASK_ADMIN_USER}") == null) {
             db.createUser({
               user: "${!FLASK_ADMIN_USER}",
